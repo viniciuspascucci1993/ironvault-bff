@@ -5,6 +5,7 @@ import rateLimit from "@fastify/rate-limit";
 import dotenv from "dotenv";
 
 import { authRoutes } from './routes/auth/authRoutes'
+import { authenticatePlugin } from './plugins/authenticate'
 
 dotenv.config();
 
@@ -27,6 +28,7 @@ fastfy.register(rateLimit, {
 });
 
 fastfy.register(authRoutes, { prefix: '/api' })
+fastfy.register(authenticatePlugin)
 
 // Health Check
 fastfy.get("/health", async () => {
