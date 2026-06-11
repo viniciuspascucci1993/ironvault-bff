@@ -4,6 +4,8 @@ import jwt from "@fastify/jwt";
 import rateLimit from "@fastify/rate-limit";
 import dotenv from "dotenv";
 
+import { authRoutes } from './routes/auth/authRoutes'
+
 dotenv.config();
 
 const fastfy = Fastify({
@@ -23,6 +25,8 @@ fastfy.register(rateLimit, {
   max: 100,
   timeWindow: "1 minute",
 });
+
+fastfy.register(authRoutes, { prefix: '/api' })
 
 // Health Check
 fastfy.get("/health", async () => {
