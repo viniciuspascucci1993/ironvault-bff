@@ -4,6 +4,13 @@ import jwt from "@fastify/jwt";
 import rateLimit from "@fastify/rate-limit";
 import dotenv from "dotenv";
 
+import { authRoutes } from "./routes/auth/authRoutes";
+import { paymentRoutes } from "./routes/payments/paymentsRoutes";
+import { usersRoutes } from './routes/users/usersRoutes'
+import { dashboardRoutes } from './routes/dashboard/dashboardRoutes'
+
+import { authenticatePlugin } from "./plugins/authenticate";
+
 dotenv.config();
 
 const fastfy = Fastify({
@@ -23,6 +30,13 @@ fastfy.register(rateLimit, {
   max: 100,
   timeWindow: "1 minute",
 });
+
+fastfy.register(authenticatePlugin);
+
+fastfy.register(authRoutes, { prefix: "/api" });
+fastfy.register(paymentRoutes, { prefix: "/api" });
+fastfy.register(usersRoutes, { prefix: '/api' })
+fastfy.register(dashboardRoutes, { prefix: '/api' })
 
 // Health Check
 fastfy.get("/health", async () => {
