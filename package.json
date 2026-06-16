@@ -18,7 +18,8 @@
     "@fastify/rate-limit": "^11.0.0",
     "axios": "^1.17.0",
     "dotenv": "^17.4.2",
-    "fastify": "^5.8.5"
+    "fastify": "^5.8.5",
+    "fastify-plugin": "^6.0.0"
   },
   "devDependencies": {
     "@types/node": "^25.9.3",

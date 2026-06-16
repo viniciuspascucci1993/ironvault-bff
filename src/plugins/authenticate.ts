@@ -1,6 +1,7 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify'
+import fp from 'fastify-plugin'
 
-export async function authenticatePlugin(fastfy: FastifyInstance) {
+async function authenticate(fastfy: FastifyInstance) {
   (fastfy as any).decorate('authenticate', async (request: FastifyRequest, reply: FastifyReply) => {
     try {
       await request.jwtVerify()
@@ -8,8 +9,6 @@ export async function authenticatePlugin(fastfy: FastifyInstance) {
       reply.status(401).send({ message: 'Unauthorized' })
     }
   })
-
-  fastfy.get('/api/protected', { preHandler: [(fastfy as any).authenticate] }, async (request, reply) => {
-    return { message: 'Você está autenticado!' }
-  })
 }
+
+export const authenticatePlugin = fp(authenticate)
