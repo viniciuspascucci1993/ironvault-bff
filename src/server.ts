@@ -6,6 +6,7 @@ import dotenv from "dotenv";
 
 import { authRoutes } from "./routes/auth/authRoutes";
 import { paymentRoutes } from "./routes/payments/paymentsRoutes";
+import { usersRoutes } from './routes/users/usersRoutes'
 
 import { authenticatePlugin } from "./plugins/authenticate";
 
@@ -33,6 +34,7 @@ fastfy.register(authenticatePlugin);
 
 fastfy.register(authRoutes, { prefix: "/api" });
 fastfy.register(paymentRoutes, { prefix: "/api" });
+fastfy.register(usersRoutes, { prefix: '/api' })
 
 // Health Check
 fastfy.get("/health", async () => {
