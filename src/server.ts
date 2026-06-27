@@ -17,11 +17,6 @@ const fastfy = Fastify({
   logger: true,
 });
 
-// Plugins
-fastfy.register(cors, {
-  origin: true,
-});
-
 fastfy.register(jwt, {
   secret: process.env.JWT_SECRET || "secret",
 });
@@ -30,6 +25,11 @@ fastfy.register(rateLimit, {
   max: 100,
   timeWindow: "1 minute",
 });
+
+fastfy.register(cors, {
+  origin: ['http://localhost:3000', 'https://backoffice.ironvaultpayments.com.br'],
+  credentials: true
+})
 
 fastfy.register(authenticatePlugin);
 
