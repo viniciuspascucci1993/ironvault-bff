@@ -37,5 +37,13 @@ export const authService = {
   resetPassword: async (token: string, newPassword: string) => {
     const response = await authClient.post('/api/auth/reset-password', { token, newPassword } )
     return response.data
+  },
+
+  changePassword: async (token: string, currentPassword: string, newPassword: string) => {
+    const response = await authClient.post('/api/auth/change-password',
+      { currentPassword, newPassword },
+      { headers: { Authorization: `Bearer ${token}` } }
+    )
+    return response.data
   }
 }
