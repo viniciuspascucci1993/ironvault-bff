@@ -59,4 +59,16 @@ export async function authRoutes(fastify: FastifyInstance) {
       return reply.status(err.response?.status || 500).send(err.response?.data || { message: 'Internal server error' })
     }
   })
+
+  fastify.post('/auth/change-password', { preHandler: [(fastify as any).authenticate] }, async (request: FastifyRequest, reply: FastifyReply) => {
+    const token = request.headers.authorization?.split(' ')[1] || ''
+    const { currentPassword, newPassword } = request.body as {  currentPassword: string; newPassword: string }
+
+    try {
+      await authService.changePassword(token, currentPassword, newPassword)
+      return reply.send({ message: 'Senha alterada com sucesso' })
+    } catch(err: any) {
+      return reply.status(err.response?.data || 500).send(err.response?.data || { message: 'Internal server error' })
+    }
+  })
 }
