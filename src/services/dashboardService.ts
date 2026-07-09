@@ -39,6 +39,38 @@ export const dashboardService = {
       ?.filter((p: any) => p.status === 'APPROVED')
       ?.reduce((acc: number, p: any) => acc + p.amount, 0) || 0
 
+    // Agrupamento de transações por dia
+    const transactionsByDay = payments.content?.reduce((acc: Record<string, number>, p: any) => {
+      const data = new Date(p.createdAt).toLocaleDateString('pt-BR')
+      acc[data] = (acc[data] || 0) + 1
+      return acc
+    }, {}) || {}
+
+    const transactionsByChartData = Object.entries(transactionsByDay)
+      .map(([date, count]) => ({ date, count }))
+      .sort((a, b) => {
+        const  [dayA, monthA, yearA] = a.date.split('/').map(Number)
+        const [dayB, monthB, yearB] = b.date.split('/').map(Number)
+        return new Date(yearA, monthA - 1, dayA).getTime() - new Date(yearB, monthB - 1, dayB).getTime()
+      })
+
+    // Receita por dia
+    const revenueByDay = payments.content
+      ?.filter((p: any) => p.status === 'APPROVED')
+      ?.reduce((acc: Record<string, number>, p: any) => {
+        const data = new Date(p.createdAt).toLocaleDateString('pt-BR')
+        acc[data] = (acc[data] || 0) + p.amount
+        return acc
+      }, {}) || {}
+      
+    const revenueByChartData = Object.entries(revenueByDay)
+      .map(([date, amount]) => ({date, amount}))
+      .sort((a, b) => {
+        const [dayA, monthA, yearA] = a.date.split('/').map(Number)
+        const [dayB, monthB, yearB] = b.date.split('/').map(Number)
+        return new Date(yearA, monthA - 1, dayA).getTime() - new Date(yearB, monthB - 1, dayB).getTime()
+      })  
+
     return {
       totalTransactions,
       totalUsers,
@@ -47,7 +79,9 @@ export const dashboardService = {
         approved,
         failed,
         processing
-      }
+      },
+      transactionsByChartData,
+      revenueByChartData
     }
   }
 }
