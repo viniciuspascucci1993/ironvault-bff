@@ -37,5 +37,12 @@ export const usersService = {
       { headers: { Authorization: `Bearer ${token}` } }
     )
     return response.data
+  },
+
+  getLoginLogs: async (token: string) => {
+    const response = await usersClient.get('/api/auth/login-logs', {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+    return response.data
   }
 }
