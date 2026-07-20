@@ -2,7 +2,7 @@ import { FastifyInstance, FastifyRequest, FastifyReply } from "fastify";
 import { apiServiceKey } from "../../services/apiKeyService";
 
 export async function apiKeyRoutes(fastify: FastifyInstance) {
-  fastify.post('/keys/generate', { preHandler: [(fastify as any).authenticated] }, async (request: FastifyRequest, reply: FastifyReply) =>  {
+  fastify.post('/keys/generate', { preHandler: [(fastify as any).authenticate] }, async (request: FastifyRequest, reply: FastifyReply) =>  {
     const token = request.headers.authorization?.split(' ')[1] || ''
     try {
       const data = await apiServiceKey.generate(token)
@@ -12,7 +12,7 @@ export async function apiKeyRoutes(fastify: FastifyInstance) {
     }
   })
 
-  fastify.get('/keys', { preHandler: [(fastify as any).authenticated] }, async (request: FastifyRequest, reply: FastifyReply) =>  {
+  fastify.get('/keys', { preHandler: [(fastify as any).authenticate] }, async (request: FastifyRequest, reply: FastifyReply) =>  {
     const token = request.headers.authorization?.split(' ')[1] || ''
     try {
       const data = await apiServiceKey.get(token)
@@ -22,7 +22,7 @@ export async function apiKeyRoutes(fastify: FastifyInstance) {
     }
   })
 
-  fastify.delete('/keys/revoke', { preHandler: [(fastify as any).authenticated] }, async (request: FastifyRequest, reply: FastifyReply) =>  {
+  fastify.delete('/keys/revoke', { preHandler: [(fastify as any).authenticate] }, async (request: FastifyRequest, reply: FastifyReply) =>  {
     const token = request.headers.authorization?.split(' ')[1] || ''
     try {
       await apiServiceKey.revoke(token)

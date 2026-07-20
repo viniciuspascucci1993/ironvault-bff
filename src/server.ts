@@ -34,6 +34,7 @@ fastfy.register(cors, {
 
 fastfy.register(authenticatePlugin);
 
+
 fastfy.register(authRoutes, { prefix: "/api" });
 fastfy.register(paymentRoutes, { prefix: "/api" });
 fastfy.register(usersRoutes, { prefix: '/api' })
