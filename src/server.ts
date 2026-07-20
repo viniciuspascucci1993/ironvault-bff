@@ -8,6 +8,7 @@ import { authRoutes } from "./routes/auth/authRoutes";
 import { paymentRoutes } from "./routes/payments/paymentsRoutes";
 import { usersRoutes } from './routes/users/usersRoutes'
 import { dashboardRoutes } from './routes/dashboard/dashboardRoutes'
+import { apiKeyRoutes } from "./routes/apikeys/apiKeyRoutes";
 
 import { authenticatePlugin } from "./plugins/authenticate";
 
@@ -37,6 +38,7 @@ fastfy.register(authRoutes, { prefix: "/api" });
 fastfy.register(paymentRoutes, { prefix: "/api" });
 fastfy.register(usersRoutes, { prefix: '/api' })
 fastfy.register(dashboardRoutes, { prefix: '/api' })
+fastfy.register(apiKeyRoutes, { prefix: '/api' })
 
 // Health Check
 fastfy.get("/health", async () => {
