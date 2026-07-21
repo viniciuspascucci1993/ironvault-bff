@@ -91,4 +91,40 @@ export async function usersRoutes(fastify: FastifyInstance) {
       }
     },
   );
+
+  fastify.patch(
+    "/users/:id/approve",
+    { preHandler: [(fastify as any).authenticate] },
+    async (request: FastifyRequest, reply: FastifyReply) => {
+      const token = request.headers.authorization?.split(" ")[1] || "";
+      const { id } = request.params as { id: string };
+
+      try {
+        await usersService.approve(token, id);
+        return reply.send({ message: "Usuário aprovado com sucesso" });
+      } catch (err: any) {
+        return reply
+          .status(err.response?.status || 500)
+          .send(err.response?.data || { message: "Internal server error" });
+      }
+    },
+  );
+
+  fastify.patch(
+    "/users/:id/reject",
+    { preHandler: [(fastify as any).authenticate] },
+    async (request: FastifyRequest, reply: FastifyReply) => {
+      const token = request.headers.authorization?.split(" ")[1] || "";
+      const { id } = request.params as { id: string };
+
+      try {
+        await usersService.reject(token, id);
+        return reply.send({ message: "Usuário rejeitado com sucesso" });
+      } catch (err: any) {
+        return reply
+          .status(err.response?.status || 500)
+          .send(err.response?.data || { message: "Internal server error" });
+      }
+    },
+  );
 }
