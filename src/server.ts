@@ -28,7 +28,7 @@ fastfy.register(rateLimit, {
 });
 
 fastfy.register(cors, {
-  origin: ['http://localhost:3000', 'https://backoffice.ironvaultpayments.com.br'],
+  origin: ['http://localhost:3000', 'https://backoffice.ironvaultpayments.com.br', 'https://landing.ironvaultpayments.com.br'],
   credentials: true
 })
 
