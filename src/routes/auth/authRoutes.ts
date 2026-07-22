@@ -17,10 +17,10 @@ export async function authRoutes(fastify: FastifyInstance) {
   })
 
   fastify.post('/auth/register', async (request: FastifyRequest, reply: FastifyReply) => {
-    const { email, password, role } = request.body as { email: string; password: string, role: string }
+    const { email, password, role, source } = request.body as { email: string; password: string, role: string, source?: string }
 
     try {
-      const data = await authService.register(email, password, role)
+      const data = await authService.register(email, password, role, source)
       return reply.status(201).send(data)
     } catch(err: any) {
       return reply.status(err.response?.status || 500).send(err.response?.data || { message: 'Internal server error' })
