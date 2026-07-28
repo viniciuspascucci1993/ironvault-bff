@@ -1,74 +1,138 @@
-import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify'
-import { authService } from '../../services/authService'
+import { FastifyInstance, FastifyRequest, FastifyReply } from "fastify";
+import { authService } from "../../services/authService";
+import { merchantService } from "../../services/merchantsService";
 
 export async function authRoutes(fastify: FastifyInstance) {
-  
-  fastify.post('/auth/login', async (request: FastifyRequest, reply: FastifyReply) => {
-    const { email, password } = request.body as { email: string; password: string }
-    const ip = request.headers['x-forwarded-for'] as string || request.ip
-    const userAgent = request.headers['user-agent'] || ''
+  fastify.post(
+    "/auth/login",
+    async (request: FastifyRequest, reply: FastifyReply) => {
+      const { email, password } = request.body as {
+        email: string;
+        password: string;
+      };
+      const ip = (request.headers["x-forwarded-for"] as string) || request.ip;
+      const userAgent = request.headers["user-agent"] || "";
 
-    try {
-      const data = await authService.login(email, password, ip, userAgent)
-      return reply.send(data)
-    } catch(err: any) {
-      return reply.status(err.response?.status || 500).send(err.response?.data || { message: 'Internal server error' })
-    }
-  })
+      try {
+        const data = await authService.login(email, password, ip, userAgent);
+        return reply.send(data);
+      } catch (err: any) {
+        return reply
+          .status(err.response?.status || 500)
+          .send(err.response?.data || { message: "Internal server error" });
+      }
+    },
+  );
 
-  fastify.post('/auth/register', async (request: FastifyRequest, reply: FastifyReply) => {
-    const { email, password, role, source } = request.body as { email: string; password: string, role: string, source?: string }
+  fastify.post(
+    "/auth/register",
+    async (request: FastifyRequest, reply: FastifyReply) => {
+      const { email, password, role, source, businessName, phone, segment } =
+        request.body as {
+          email: string;
+          password: string;
+          role: string;
+          source?: string;
+          businessName?: string;
+          phone?: string;
+          segment?: string;
+        };
 
-    try {
-      const data = await authService.register(email, password, role, source)
-      return reply.status(201).send(data)
-    } catch(err: any) {
-      return reply.status(err.response?.status || 500).send(err.response?.data || { message: 'Internal server error' })
-    }
-  })
+      try {
+        const data = await authService.register(email, password, role, source);
+        // Se vier da landing, cria o perfil no merchants
+        if (source === "landing" && data.userId && businessName) {
+          try {
+            await merchantService.createProfile(
+              data.userId,
+              businessName,
+              phone,
+              segment,
+            );
+          } catch (err) {
+            // não quebra o fluxo se o perfil falhar
+            console.error("Failed to create merchant profile:", err);
+          }
+        }
 
-  fastify.post('/auth/refresh', async (request: FastifyRequest, reply: FastifyReply) => {
-    const { refreshToken } = request.body as { refreshToken: string }
+        return reply.status(201).send(data);
+      } catch (err: any) {
+        return reply
+          .status(err.response?.status || 500)
+          .send(err.response?.data || { message: "Internal server error" });
+      }
+    },
+  );
 
-    try {
-      const data = await authService.refresh(refreshToken)
-      return reply.send(data)
-    } catch (err: any) {
-      return reply.status(err.response?.status || 500).send(err.response?.data || { message: 'Internal server error' })
-    }
-  })
+  fastify.post(
+    "/auth/refresh",
+    async (request: FastifyRequest, reply: FastifyReply) => {
+      const { refreshToken } = request.body as { refreshToken: string };
 
-  fastify.post('/auth/forgot-password', async (request: FastifyRequest, reply: FastifyReply) => {
-    const { email } = request.body as { email: string }
+      try {
+        const data = await authService.refresh(refreshToken);
+        return reply.send(data);
+      } catch (err: any) {
+        return reply
+          .status(err.response?.status || 500)
+          .send(err.response?.data || { message: "Internal server error" });
+      }
+    },
+  );
 
-    try {
-      await authService.forgotPassword(email)
-      return reply.send({ message: 'Email enviado com sucesso' })
-    } catch (err: any) {
-      return reply.status(err.response?.status || 500).send(err.response?.data || { message: 'Internal server error' })
-    }
-  })
+  fastify.post(
+    "/auth/forgot-password",
+    async (request: FastifyRequest, reply: FastifyReply) => {
+      const { email } = request.body as { email: string };
 
-  fastify.post('/auth/reset-password', async (request: FastifyRequest, reply: FastifyReply) => {
-    const { token, newPassword } = request.body as { token: string; newPassword: string }
+      try {
+        await authService.forgotPassword(email);
+        return reply.send({ message: "Email enviado com sucesso" });
+      } catch (err: any) {
+        return reply
+          .status(err.response?.status || 500)
+          .send(err.response?.data || { message: "Internal server error" });
+      }
+    },
+  );
 
-    try {
-      await authService.resetPassword(token, newPassword)
-      return reply.send({ message: 'Senha redefinida com sucesso' })
-    } catch (err: any) {
-      return reply.status(err.response?.status || 500).send(err.response?.data || { message: 'Internal server error' })
-    }
-  })
+  fastify.post(
+    "/auth/reset-password",
+    async (request: FastifyRequest, reply: FastifyReply) => {
+      const { token, newPassword } = request.body as {
+        token: string;
+        newPassword: string;
+      };
 
-  fastify.post('/auth/change-password', { preHandler: [(fastify as any).authenticate] }, async (request: FastifyRequest, reply: FastifyReply) => {
-    const token = request.headers.authorization?.split(' ')[1] || ''
-    const { currentPassword, newPassword } = request.body as {  currentPassword: string; newPassword: string }
+      try {
+        await authService.resetPassword(token, newPassword);
+        return reply.send({ message: "Senha redefinida com sucesso" });
+      } catch (err: any) {
+        return reply
+          .status(err.response?.status || 500)
+          .send(err.response?.data || { message: "Internal server error" });
+      }
+    },
+  );
 
-    try {
-      await authService.changePassword(token, currentPassword, newPassword)
-      return reply.send({ message: 'Senha alterada com sucesso' })
-    } catch(err: any) {
-      return reply.status(err.response?.data || 500).send(err.response?.data || { message: 'Internal server error' })
-    }
-  })
+  fastify.post(
+    "/auth/change-password",
+    { preHandler: [(fastify as any).authenticate] },
+    async (request: FastifyRequest, reply: FastifyReply) => {
+      const token = request.headers.authorization?.split(" ")[1] || "";
+      const { currentPassword, newPassword } = request.body as {
+        currentPassword: string;
+        newPassword: string;
+      };
+
+      try {
+        await authService.changePassword(token, currentPassword, newPassword);
+        return reply.send({ message: "Senha alterada com sucesso" });
+      } catch (err: any) {
+        return reply
+          .status(err.response?.data || 500)
+          .send(err.response?.data || { message: "Internal server error" });
+      }
+    },
+  );
 }
