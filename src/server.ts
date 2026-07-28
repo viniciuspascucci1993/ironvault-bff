@@ -11,6 +11,7 @@ import { dashboardRoutes } from './routes/dashboard/dashboardRoutes'
 import { apiKeyRoutes } from "./routes/apikeys/apiKeyRoutes";
 
 import { authenticatePlugin } from "./plugins/authenticate";
+import { merchantsRoutes } from './routes/merchants/merchantsRoutes'
 
 dotenv.config();
 
@@ -40,6 +41,7 @@ fastfy.register(paymentRoutes, { prefix: "/api" });
 fastfy.register(usersRoutes, { prefix: '/api' })
 fastfy.register(dashboardRoutes, { prefix: '/api' })
 fastfy.register(apiKeyRoutes, { prefix: '/api' })
+fastfy.register(merchantsRoutes, { prefix: '/api' })
 
 // Health Check
 fastfy.get("/health", async () => {
