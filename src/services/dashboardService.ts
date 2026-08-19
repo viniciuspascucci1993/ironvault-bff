@@ -49,6 +49,18 @@ export const dashboardService = {
         ?.filter((p: any) => p.status === "APPROVED")
         ?.reduce((acc: number, p: any) => acc + p.amount, 0) || 0;
 
+    const totalNetRevenue =
+      payments.content
+        ?.filter((p: any) => p.status === "APPROVED")
+        ?.reduce((acc: number, p: any) => acc + (p.netAmount ?? p.amount), 0) ||
+      0;
+
+    const totalComissions =
+      payments.content
+        ?.filter((p: any) => p.status === "APPROVED")
+        ?.reduce((acc: number, p: any) => acc + (p.applicationFee ?? 0), 0) ||
+      0;
+
     // Agrupamento de transações por dia
     const transactionsByDay =
       payments.content?.reduce((acc: Record<string, number>, p: any) => {
@@ -93,6 +105,8 @@ export const dashboardService = {
       totalTransactions,
       totalUsers,
       totalRevenue,
+      totalNetRevenue,
+      totalComissions,
       transactionsByStatus: {
         approved,
         failed,
