@@ -55,7 +55,7 @@ export const dashboardService = {
         ?.reduce((acc: number, p: any) => acc + (p.netAmount ?? p.amount), 0) ||
       0;
 
-    const totalComissions =
+    const totalCommissions =
       payments.content
         ?.filter((p: any) => p.status === "APPROVED")
         ?.reduce((acc: number, p: any) => acc + (p.applicationFee ?? 0), 0) ||
@@ -106,7 +106,7 @@ export const dashboardService = {
       totalUsers,
       totalRevenue,
       totalNetRevenue,
-      totalComissions,
+      totalCommissions,
       transactionsByStatus: {
         approved,
         failed,
