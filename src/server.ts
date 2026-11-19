@@ -24,6 +24,10 @@ const fastfy = Fastify({
   logger: true,
 });
 
+fastfy.register(jwt, {
+  secret: jwtSecret,
+});
+
 fastfy.register(rateLimit, {
   max: 100,
   timeWindow: "1 minute",
