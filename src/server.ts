@@ -15,12 +15,13 @@ import { merchantsRoutes } from './routes/merchants/merchantsRoutes'
 
 dotenv.config();
 
+const jwtSecret = process.env.JWT_SECRET
+if(!jwtSecret) {
+	throw new Error("JWT_SECRET não definido: o BFF não sobe sem ele.");
+}
+
 const fastfy = Fastify({
   logger: true,
-});
-
-fastfy.register(jwt, {
-  secret: process.env.JWT_SECRET || "secret",
 });
 
 fastfy.register(rateLimit, {
